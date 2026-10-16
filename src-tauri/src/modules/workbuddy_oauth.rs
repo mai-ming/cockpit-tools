@@ -3,10 +3,8 @@ use std::sync::{Arc, Mutex};
 
 use crate::models::workbuddy::{WorkbuddyOAuthCompletePayload, WorkbuddyOAuthStartResponse};
 use crate::modules::logger;
+use crate::modules::workbuddy_variant::{WorkbuddyVariant, WorkbuddyVariantId, WORKBUDDY_CN};
 
-const WORKBUDDY_API_ENDPOINT: &str = "https://copilot.tencent.com";
-const WORKBUDDY_API_PREFIX: &str = "/v2/plugin";
-const WORKBUDDY_PLATFORM: &str = "workbuddy";
 // WorkBuddy 与 CodeBuddy 共用同一网关校验，缺少 User-Agent 会返回 403 / code=10085。
 const WORKBUDDY_HTTP_USER_AGENT: &str =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
@@ -14,10 +12,14 @@ const OAUTH_TIMEOUT_SECONDS: u64 = 600;
 const OAUTH_POLL_INTERVAL_MS: u64 = 1500;
 /// 企业版套餐代码（本地标识，用于前端识别企业用量资源）
 const ENTERPRISE_PACKAGE_CODE: &str = "TCACA_code_enterprise";
+/// 单槽位待处理登录状态被其他变体占用时的提示。
+const PENDING_LOGIN_VARIANT_MISMATCH: &str =
+    "当前待处理的登录请求属于其他 WorkBuddy 版本，请重新发起";
 
 #[derive(Clone)]
 struct PendingOAuthState {
     login_id: String,
+    variant_id: WorkbuddyVariantId,
     expires_at: i64,
     state: String,
     cancelled: bool,
@@ -151,29 +153,42 @@ fn json_scalar_string(value: Option<&Value>) -> String {
     }
 }
 
-fn clear_pending_login(login_id: &str) -> Result<(), String> {
+fn clear_pending_login_for(variant: &WorkbuddyVariant, login_id: &str) -> Result<(), String> {
     let mut pending = PENDING_OAUTH_STATE
         .lock()
         .map_err(|_| "获取锁失败".to_string())?;
-    if pending
-        .as_ref()
-        .map(|s| s.login_id == login_id)
-        .unwrap_or(false)
-    {
-        *pending = None;
+    let Some(state) = pending.as_ref() else {
+        return Ok(());
+    };
+    if state.login_id != login_id {
+        return Ok(());
     }
+    if state.variant_id != variant.id {
+        return Err(PENDING_LOGIN_VARIANT_MISMATCH.to_string());
+    }
+    *pending = None;
     Ok(())
 }
 
 pub fn clear_pending_oauth_login(login_id: &str) -> Result<(), String> {
-    clear_pending_login(login_id)
+    clear_pending_oauth_login_for(&WORKBUDDY_CN, login_id)
 }
 
-async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStartResponse, String> {
+pub(crate) fn clear_pending_oauth_login_for(
+    variant: &'static WorkbuddyVariant,
+    login_id: &str,
+) -> Result<(), String> {
+    clear_pending_login_for(variant, login_id)
+}
+
+async fn start_login_with_platform(
+    variant: &'static WorkbuddyVariant,
+) -> Result<WorkbuddyOAuthStartResponse, String> {
+    let platform = variant.platform;
     let client = build_client()?;
     let url = format!(
         "{}{}/auth/state?platform={}",
-        WORKBUDDY_API_ENDPOINT, WORKBUDDY_API_PREFIX, platform
+        variant.api_endpoint, variant.api_prefix, platform
     );
 
     logger::log_info(&format!("[WorkBuddy OAuth] 请求 auth/state: {}", url));
@@ -228,7 +243,7 @@ async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStart
     .flatten();
 
     let base_verification_uri = if auth_url.is_empty() {
-        format!("{}/login?state={}", WORKBUDDY_API_ENDPOINT, state)
+        format!("{}/login?state={}", variant.api_endpoint, state)
     } else {
         auth_url.clone()
     };
@@ -244,6 +259,7 @@ async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStart
             .map_err(|_| "获取锁失败".to_string())?;
         *pending = Some(PendingOAuthState {
             login_id: login_id.clone(),
+            variant_id: variant.id,
             expires_at: now_timestamp() + OAUTH_TIMEOUT_SECONDS as i64,
             state: state.clone(),
             cancelled: false,
@@ -265,10 +281,23 @@ async fn start_login_with_platform(platform: &str) -> Result<WorkbuddyOAuthStart
 }
 
 pub async fn start_login() -> Result<WorkbuddyOAuthStartResponse, String> {
-    start_login_with_platform(WORKBUDDY_PLATFORM).await
+    start_login_for(&WORKBUDDY_CN).await
+}
+
+pub(crate) async fn start_login_for(
+    variant: &'static WorkbuddyVariant,
+) -> Result<WorkbuddyOAuthStartResponse, String> {
+    start_login_with_platform(variant).await
 }
 
 pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayload, String> {
+    complete_login_for(&WORKBUDDY_CN, login_id).await
+}
+
+pub(crate) async fn complete_login_for(
+    variant: &'static WorkbuddyVariant,
+    login_id: &str,
+) -> Result<WorkbuddyOAuthCompletePayload, String> {
     let client = build_client()?;
     let start = now_timestamp();
 
@@ -283,6 +312,9 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
                     if s.login_id != login_id {
                         return Err("login_id 不匹配".to_string());
                     }
+                    if s.variant_id != variant.id {
+                        return Err(PENDING_LOGIN_VARIANT_MISMATCH.to_string());
+                    }
                     if s.cancelled {
                         return Err("登录已取消".to_string());
                     }
@@ -296,7 +328,7 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
 
         let url = format!(
             "{}{}/auth/token?state={}",
-            WORKBUDDY_API_ENDPOINT, WORKBUDDY_API_PREFIX, state_info.state
+            variant.api_endpoint, variant.api_prefix, state_info.state
         );
 
         match client
@@ -345,7 +377,8 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
 
                                 let auth_raw = Some(data.clone());
 
-                                let account_info = fetch_account_info(
+                                let account_info = fetch_account_info_for(
+                                    variant,
                                     &client,
                                     &access_token,
                                     &state_info.state,
@@ -417,11 +450,21 @@ pub async fn complete_login(login_id: &str) -> Result<WorkbuddyOAuthCompletePayl
 }
 
 pub fn cancel_login(login_id: Option<&str>) -> Result<(), String> {
+    cancel_login_for(&WORKBUDDY_CN, login_id)
+}
+
+pub(crate) fn cancel_login_for(
+    variant: &'static WorkbuddyVariant,
+    login_id: Option<&str>,
+) -> Result<(), String> {
     let mut pending = PENDING_OAUTH_STATE
         .lock()
         .map_err(|_| "获取锁失败".to_string())?;
     if let Some(state) = pending.as_mut() {
         if login_id.is_none() || login_id == Some(state.login_id.as_str()) {
+            if state.variant_id != variant.id {
+                return Err(PENDING_LOGIN_VARIANT_MISMATCH.to_string());
+            }
             state.cancelled = true;
             *pending = None;
         }
@@ -429,7 +472,8 @@ pub fn cancel_login(login_id: Option<&str>) -> Result<(), String> {
     Ok(())
 }
 
-async fn fetch_account_info(
+async fn fetch_account_info_for(
+    variant: &WorkbuddyVariant,
     client: &reqwest::Client,
     access_token: &str,
     state: &str,
@@ -447,7 +491,7 @@ async fn fetch_account_info(
 > {
     let url = format!(
         "{}{}/login/account?state={}",
-        WORKBUDDY_API_ENDPOINT, WORKBUDDY_API_PREFIX, state
+        variant.api_endpoint, variant.api_prefix, state
     );
 
     let mut req = client
@@ -522,10 +566,19 @@ pub async fn refresh_token(
     refresh_token: &str,
     domain: Option<&str>,
 ) -> Result<Value, String> {
+    refresh_token_for(&WORKBUDDY_CN, access_token, refresh_token, domain).await
+}
+
+pub(crate) async fn refresh_token_for(
+    variant: &WorkbuddyVariant,
+    access_token: &str,
+    refresh_token: &str,
+    domain: Option<&str>,
+) -> Result<Value, String> {
     let client = build_client()?;
     let url = format!(
         "{}{}/auth/token/refresh",
-        WORKBUDDY_API_ENDPOINT, WORKBUDDY_API_PREFIX
+        variant.api_endpoint, variant.api_prefix
     );
 
     let mut req = client
@@ -570,10 +623,20 @@ pub async fn fetch_dosage_notify(
     enterprise_id: Option<&str>,
     domain: Option<&str>,
 ) -> Result<Value, String> {
+    fetch_dosage_notify_for(&WORKBUDDY_CN, access_token, uid, enterprise_id, domain).await
+}
+
+pub(crate) async fn fetch_dosage_notify_for(
+    variant: &WorkbuddyVariant,
+    access_token: &str,
+    uid: Option<&str>,
+    enterprise_id: Option<&str>,
+    domain: Option<&str>,
+) -> Result<Value, String> {
     let client = build_client()?;
     let url = format!(
         "{}/v2/billing/meter/get-dosage-notify",
-        WORKBUDDY_API_ENDPOINT
+        variant.api_endpoint
     );
 
     let mut req = client
@@ -611,10 +674,20 @@ pub async fn fetch_payment_type(
     enterprise_id: Option<&str>,
     domain: Option<&str>,
 ) -> Result<Value, String> {
+    fetch_payment_type_for(&WORKBUDDY_CN, access_token, uid, enterprise_id, domain).await
+}
+
+pub(crate) async fn fetch_payment_type_for(
+    variant: &WorkbuddyVariant,
+    access_token: &str,
+    uid: Option<&str>,
+    enterprise_id: Option<&str>,
+    domain: Option<&str>,
+) -> Result<Value, String> {
     let client = build_client()?;
     let url = format!(
         "{}/v2/billing/meter/get-payment-type",
-        WORKBUDDY_API_ENDPOINT
+        variant.api_endpoint
     );
 
     let mut req = client
@@ -658,12 +731,42 @@ pub async fn fetch_user_resource_with_access_token(
     _page_number: i32,
     _page_size: i32,
 ) -> Result<Value, String> {
-    let _ = (product_code, status);
-    let body = build_user_resource_request_body();
-    post_user_resource(access_token, uid, enterprise_id, domain, body).await
+    fetch_user_resource_with_access_token_for(
+        &WORKBUDDY_CN,
+        access_token,
+        uid,
+        enterprise_id,
+        domain,
+        product_code,
+        status,
+        _package_end_time_range_begin,
+        _package_end_time_range_end,
+        _page_number,
+        _page_size,
+    )
+    .await
 }
 
-async fn post_user_resource(
+pub(crate) async fn fetch_user_resource_with_access_token_for(
+    variant: &WorkbuddyVariant,
+    access_token: &str,
+    uid: Option<&str>,
+    enterprise_id: Option<&str>,
+    domain: Option<&str>,
+    product_code: &str,
+    status: &[i32],
+    _package_end_time_range_begin: &str,
+    _package_end_time_range_end: &str,
+    _page_number: i32,
+    _page_size: i32,
+) -> Result<Value, String> {
+    let _ = (product_code, status);
+    let body = build_user_resource_request_body();
+    post_user_resource_for(variant, access_token, uid, enterprise_id, domain, body).await
+}
+
+async fn post_user_resource_for(
+    variant: &WorkbuddyVariant,
     access_token: &str,
     uid: Option<&str>,
     enterprise_id: Option<&str>,
@@ -673,7 +776,7 @@ async fn post_user_resource(
     let client = build_client()?;
     let url = format!(
         "{}/v2/billing/meter/get-user-resource",
-        WORKBUDDY_API_ENDPOINT
+        variant.api_endpoint
     );
 
     let mut req = client
@@ -766,10 +869,20 @@ pub async fn fetch_enterprise_user_usage(
     enterprise_id: &str,
     domain: Option<&str>,
 ) -> Result<Value, String> {
+    fetch_enterprise_user_usage_for(&WORKBUDDY_CN, access_token, uid, enterprise_id, domain).await
+}
+
+pub(crate) async fn fetch_enterprise_user_usage_for(
+    variant: &WorkbuddyVariant,
+    access_token: &str,
+    uid: Option<&str>,
+    enterprise_id: &str,
+    domain: Option<&str>,
+) -> Result<Value, String> {
     let client = build_client()?;
     let url = format!(
         "{}/v2/billing/meter/get-enterprise-user-usage",
-        WORKBUDDY_API_ENDPOINT
+        variant.api_endpoint
     );
 
     let mut req = client
@@ -909,13 +1022,15 @@ pub fn wrap_enterprise_usage_as_resource(usage_body: &Value) -> Result<Value, St
     }))
 }
 
-async fn fetch_user_resource_with_access_token_default(
+async fn fetch_user_resource_with_access_token_default_for(
+    variant: &WorkbuddyVariant,
     access_token: &str,
     uid: Option<&str>,
     enterprise_id: Option<&str>,
     domain: Option<&str>,
 ) -> Result<Value, String> {
-    let payload = post_user_resource(
+    let payload = post_user_resource_for(
+        variant,
         access_token,
         uid,
         enterprise_id,
@@ -932,21 +1047,25 @@ async fn fetch_user_resource_with_access_token_default(
     }
 }
 
-async fn fetch_quota_resource_for_account(
+async fn fetch_quota_resource_for_account_for(
+    variant: &WorkbuddyVariant,
     access_token: &str,
     uid: Option<&str>,
     enterprise_id: Option<&str>,
     domain: Option<&str>,
 ) -> Result<Value, String> {
     if let Some(enterprise_id) = enterprise_id {
-        let body = fetch_enterprise_user_usage(access_token, uid, enterprise_id, domain).await?;
+        let body = fetch_enterprise_user_usage_for(variant, access_token, uid, enterprise_id, domain)
+            .await?;
         wrap_enterprise_usage_as_resource(&body)
     } else {
-        fetch_user_resource_with_access_token_default(access_token, uid, None, domain).await
+        fetch_user_resource_with_access_token_default_for(variant, access_token, uid, None, domain)
+            .await
     }
 }
 
-async fn refresh_payload_for_account_inner(
+async fn refresh_payload_for_account_inner_for(
+    variant: &WorkbuddyVariant,
     account: &crate::models::workbuddy::WorkbuddyAccount,
     require_user_resource: bool,
 ) -> Result<(WorkbuddyOAuthCompletePayload, Option<String>), String> {
@@ -956,7 +1075,14 @@ async fn refresh_payload_for_account_inner(
     let mut new_domain = account.domain.clone();
 
     if let Some(refresh_tk) = account.refresh_token.as_deref() {
-        match refresh_token(&account.access_token, refresh_tk, account.domain.as_deref()).await {
+        match refresh_token_for(
+            variant,
+            &account.access_token,
+            refresh_tk,
+            account.domain.as_deref(),
+        )
+        .await
+        {
             Ok(token_data) => {
                 new_access_token = token_data
                     .get("accessToken")
@@ -997,7 +1123,8 @@ async fn refresh_payload_for_account_inner(
     let resolved_enterprise_name = account.enterprise_name.clone();
     let resolved_profile_raw = account.profile_raw.clone();
 
-    let dosage = fetch_dosage_notify(
+    let dosage = fetch_dosage_notify_for(
+        variant,
         &new_access_token,
         resolved_uid.as_deref(),
         resolved_enterprise_id.as_deref(),
@@ -1006,7 +1133,8 @@ async fn refresh_payload_for_account_inner(
     .await
     .ok();
 
-    let payment = fetch_payment_type(
+    let payment = fetch_payment_type_for(
+        variant,
         &new_access_token,
         resolved_uid.as_deref(),
         resolved_enterprise_id.as_deref(),
@@ -1022,7 +1150,8 @@ async fn refresh_payload_for_account_inner(
         resolved_enterprise_id.is_some(),
         new_domain.is_some()
     ));
-    let user_resource = match fetch_quota_resource_for_account(
+    let user_resource = match fetch_quota_resource_for_account_for(
+        variant,
         new_access_token.as_str(),
         resolved_uid.as_deref(),
         resolved_enterprise_id.as_deref(),
@@ -1135,17 +1264,31 @@ async fn refresh_payload_for_account_inner(
 pub async fn refresh_payload_for_account(
     account: &crate::models::workbuddy::WorkbuddyAccount,
 ) -> Result<(WorkbuddyOAuthCompletePayload, Option<String>), String> {
-    refresh_payload_for_account_inner(account, false).await
+    refresh_payload_for_account_for(&WORKBUDDY_CN, account).await
+}
+
+pub(crate) async fn refresh_payload_for_account_for(
+    variant: &WorkbuddyVariant,
+    account: &crate::models::workbuddy::WorkbuddyAccount,
+) -> Result<(WorkbuddyOAuthCompletePayload, Option<String>), String> {
+    refresh_payload_for_account_inner_for(variant, account, false).await
 }
 
 pub async fn build_payload_from_token(
+    access_token: &str,
+) -> Result<WorkbuddyOAuthCompletePayload, String> {
+    build_payload_from_token_for(&WORKBUDDY_CN, access_token).await
+}
+
+pub(crate) async fn build_payload_from_token_for(
+    variant: &WorkbuddyVariant,
     access_token: &str,
 ) -> Result<WorkbuddyOAuthCompletePayload, String> {
     let client = build_client()?;
 
     let url = format!(
         "{}{}/accounts",
-        WORKBUDDY_API_ENDPOINT, WORKBUDDY_API_PREFIX
+        variant.api_endpoint, variant.api_prefix
     );
 
     let resp = client
@@ -1205,15 +1348,16 @@ pub async fn build_payload_from_token(
         .filter(|s| !s.is_empty())
         .map(|s| s.to_string());
 
-    let dosage = fetch_dosage_notify(access_token, uid.as_deref(), enterprise_id.as_deref(), None)
+    let dosage = fetch_dosage_notify_for(variant, access_token, uid.as_deref(), enterprise_id.as_deref(), None)
         .await
         .ok();
 
-    let payment = fetch_payment_type(access_token, uid.as_deref(), enterprise_id.as_deref(), None)
+    let payment = fetch_payment_type_for(variant, access_token, uid.as_deref(), enterprise_id.as_deref(), None)
         .await
         .ok();
 
-    let user_resource = fetch_user_resource_with_access_token_default(
+    let user_resource = fetch_user_resource_with_access_token_default_for(
+        variant,
         access_token,
         uid.as_deref(),
         enterprise_id.as_deref(),

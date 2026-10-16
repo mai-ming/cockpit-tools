@@ -6731,6 +6731,17 @@
     "syncSuccess": "Đã đồng bộ {{count}} tài khoản với WorkBuddy",
     "syncToWorkbuddy": "Đồng bộ tới WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Quản lý tài khoản WorkBuddy AI (bản quốc tế) (bấm để mở rộng/thu gọn)",
+      "desc": "Việc chuyển tài khoản ghi tệp đăng nhập trên máy này và nhập cục bộ đọc chính tệp đó; dữ liệu chỉ xử lý cục bộ. Nếu phát hiện phong bì chính thức không thể giải mã, tệp gốc được giữ nguyên và không bị ghi đè.",
+      "permission": "Phạm vi quyền: đọc/ghi tệp đăng nhập WorkBuddy AI cục bộ (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) cho nhập cục bộ và chuyển tài khoản.",
+      "network": "Phạm vi mạng: đăng nhập OAuth và làm mới token gọi WorkBuddy AI (www.workbuddy.ai); tệp đăng nhập cục bộ và thông tin xác thực không bao giờ được tải lên."
+    },
+    "import": {
+      "localClient": "Nhập từ WorkBuddy AI cục bộ"
+    }
+  },
   "workbuddy": {
     "title": "Quản lý tài khoản WorkBuddy",
     "noAccounts": "Chưa có tài khoản WorkBuddy",

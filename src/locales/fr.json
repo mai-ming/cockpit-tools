@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} compte(s) synchronisé(s) avec WorkBuddy",
     "syncToWorkbuddy": "Synchroniser avec WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Gestion des comptes WorkBuddy AI (version internationale) (cliquez pour développer/réduire)",
+      "desc": "Le changement de compte écrit le fichier de connexion sur cette machine et l'import local lit ce même fichier ; les données restent locales. Si une enveloppe officielle indéchiffrable est détectée, le fichier d'origine est conservé et jamais écrasé.",
+      "permission": "Périmètre des autorisations : lire/écrire le fichier de connexion local de WorkBuddy AI (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) pour l'import local et le changement de compte.",
+      "network": "Périmètre réseau : la connexion OAuth et le rafraîchissement du jeton appellent WorkBuddy AI (www.workbuddy.ai) ; les fichiers de connexion locaux et les identifiants ne sont jamais envoyés."
+    },
+    "import": {
+      "localClient": "Importer depuis WorkBuddy AI local"
+    }
+  },
   "workbuddy": {
     "title": "Gestion des comptes WorkBuddy",
     "noAccounts": "Aucun compte WorkBuddy",

@@ -58,6 +58,8 @@ export function getPlatformLabel(platformId: PlatformId, _t: TFunction): string 
       return _t('nav.traeSoloCn', 'TRAE SOLO CN');
     case 'workbuddy':
       return 'WorkBuddy';
+    case 'workbuddy_ai':
+      return 'WorkBuddy AI';
     default:
       return platformId;
   }
@@ -104,6 +106,8 @@ export function renderPlatformIcon(platformId: PlatformId, size = 20): ReactNode
     case 'trae_solo_cn':
       return <TraeSoloCnIcon style={{ width: size, height: size }} />;
     case 'workbuddy':
+      return <WorkbuddyIcon style={{ width: size, height: size }} />;
+    case 'workbuddy_ai':
       return <WorkbuddyIcon style={{ width: size, height: size }} />;
     default:
       return null;

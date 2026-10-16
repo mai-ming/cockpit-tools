@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} hesap WorkBuddy ile senkronize edildi",
     "syncToWorkbuddy": "WorkBuddy ile Senkronize Et"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI (uluslararası sürüm) hesap yönetimi (genişletmek/daraltmak için tıklayın)",
+      "desc": "Hesap değiştirme oturum açma dosyasını bu makineye yazar ve yerel içe aktarma aynı dosyayı okur; veriler yerelde kalır. Çözülemeyen resmi bir zarf algılanırsa özgün dosya korunur ve üzerine yazılmaz.",
+      "permission": "İzin kapsamı: yerel içe aktarma ve hesap değiştirme için yerel WorkBuddy AI oturum açma dosyasını (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) okuma/yazma.",
+      "network": "Ağ kapsamı: OAuth oturum açma ve belirteç yenileme WorkBuddy AI (www.workbuddy.ai) ile iletişim kurar; yerel oturum açma dosyaları ve kimlik bilgileri hiçbir zaman yüklenmez."
+    },
+    "import": {
+      "localClient": "Yerel WorkBuddy AI'dan içe aktar"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy Hesap Yönetimi",
     "noAccounts": "WorkBuddy hesabı yok",

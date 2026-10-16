@@ -6731,6 +6731,17 @@
     "syncSuccess": "已將 {{count}} 個帳號同步至 WorkBuddy",
     "syncToWorkbuddy": "同步至 WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI（國際版）帳號管理說明（點擊展開/收合）",
+      "desc": "切號會把登入檔案寫入本機，本機匯入讀取同一登入檔案，資料僅在本機處理；偵測到無法解密的官方封裝時會保留原檔案並停止覆寫。",
+      "permission": "權限範圍：讀寫本機 WorkBuddy AI 登入檔案（CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info），用於本機匯入與帳號切換。",
+      "network": "網路範圍：OAuth 授權登入與 Token 更新需連線請求 WorkBuddy AI（www.workbuddy.ai）；不上傳本機登入檔案或憑證原文。"
+    },
+    "import": {
+      "localClient": "從本機 WorkBuddy AI 匯入"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy 帳號管理",
     "noAccounts": "暫無 WorkBuddy 帳號",

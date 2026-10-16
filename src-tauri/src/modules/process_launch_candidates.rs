@@ -892,6 +892,20 @@ fn windows_app_launch_signature(app: &str) -> Option<WindowsAppLaunchSignature> 
             common_paths: &["WorkBuddy\\WorkBuddy.exe"],
             supports_multi_instance: true,
         }),
+        // 国际版 WorkBuddy AI（workbuddy.ai）。exe 名与国内版不同，
+        // display_keywords 用 "workbuddy ai" 以免和国内版 "WorkBuddy 5.x" 互相命中。
+        "workbuddy_ai" => Some(WindowsAppLaunchSignature {
+            label: "WorkBuddy AI",
+            exe_names: &["WorkBuddyAI.exe", "WorkBuddy AI.exe"],
+            command_names: &["workbuddy-ai"],
+            protocol_names: &["workbuddy-ai"],
+            display_keywords: &["workbuddy ai"],
+            common_paths: &[
+                "WorkBuddyAI\\WorkBuddyAI.exe",
+                "WorkBuddy AI\\WorkBuddyAI.exe",
+            ],
+            supports_multi_instance: false,
+        }),
         "zed" => Some(WindowsAppLaunchSignature {
             label: "Zed",
             exe_names: &["Zed.exe", "zed.exe"],

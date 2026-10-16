@@ -6778,6 +6778,17 @@
     "syncSuccess": "تمت مزامنة {{count}} حساب/حسابات مع WorkBuddy",
     "syncToWorkbuddy": "مزامنة مع WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "إدارة حسابات WorkBuddy AI (الإصدار الدولي) (انقر للتوسيع/الطي)",
+      "desc": "يؤدي تبديل الحساب إلى كتابة ملف تسجيل الدخول على هذا الجهاز، ويقرأ الاستيراد المحلي الملف نفسه؛ تبقى البيانات محلية. عند اكتشاف غلاف رسمي غير قابل لفك التشفير، يُحتفظ بالملف الأصلي ولا يُستبدل.",
+      "permission": "نطاق الأذونات: قراءة/كتابة ملف تسجيل الدخول المحلي لـ WorkBuddy AI (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) لأجل الاستيراد المحلي وتبديل الحساب.",
+      "network": "نطاق الشبكة: يتطلب تسجيل الدخول عبر OAuth وتحديث الرمز اتصالاً بـ WorkBuddy AI (www.workbuddy.ai)؛ ولا تُرفع ملفات تسجيل الدخول المحلية أو بيانات الاعتماد."
+    },
+    "import": {
+      "localClient": "الاستيراد من WorkBuddy AI المحلي"
+    }
+  },
   "workbuddy": {
     "title": "إدارة حسابات WorkBuddy",
     "noAccounts": "لا توجد حسابات WorkBuddy",

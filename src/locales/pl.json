@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} kont(a) zsynchronizowanych z WorkBuddy",
     "syncToWorkbuddy": "Synchronizuj z WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Zarządzanie kontami WorkBuddy AI (wersja międzynarodowa) (kliknij, aby rozwinąć/zwinąć)",
+      "desc": "Przełączenie konta zapisuje plik logowania na tym komputerze, a import lokalny czyta ten sam plik; dane pozostają lokalne. W razie wykrycia nieodszyfrowywalnej oficjalnej koperty plik źródłowy zostaje zachowany i nie jest nadpisywany.",
+      "permission": "Zakres uprawnień: odczyt i zapis lokalnego pliku logowania WorkBuddy AI (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) na potrzeby importu lokalnego i przełączania kont.",
+      "network": "Zakres sieciowy: logowanie OAuth i odświeżanie tokenu łączą się z WorkBuddy AI (www.workbuddy.ai); lokalne pliki logowania i dane uwierzytelniające nie są wysyłane."
+    },
+    "import": {
+      "localClient": "Importuj z lokalnego WorkBuddy AI"
+    }
+  },
   "workbuddy": {
     "title": "Zarządzanie kontami WorkBuddy",
     "noAccounts": "Brak kont WorkBuddy",

@@ -226,6 +226,9 @@ function resolveInstanceStoreApi(platformId: PlatformId): FloatingCardInstanceSt
       return useTraeSoloCnInstanceStore.getState();
     case 'workbuddy':
       return useWorkbuddyInstanceStore.getState();
+    case 'workbuddy_ai':
+      // 国际版暂不支持多开实例。
+      return null;
     case 'zcode':
       return useZcodeInstanceStore.getState();
     case 'zed':
