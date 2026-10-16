@@ -344,3 +344,5 @@ jobs:
           if-no-files-found: error
           path: |
             ${{ matrix.release_dir }}/bundle
+
+# CI probe: 触发 fork 上的工作流登记（仅存在于临时构建分支，不进 PR）
