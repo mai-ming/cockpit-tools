@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} 件のアカウントを WorkBuddy に同期しました",
     "syncToWorkbuddy": "WorkBuddyに同期"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI（国際版）アカウント管理（クリックで展開/折りたたみ）",
+      "desc": "アカウント切り替えは本機のログインファイルに書き込み、本機インポートは同じファイルを読み取ります。データはローカルに留まります。復号できない公式の暗号化エンベロープを検出した場合は、元のファイルを保持し上書きしません。",
+      "permission": "権限範囲：本機の WorkBuddy AI ログインファイル（CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info）の読み書き。本機インポートとアカウント切り替えに使用します。",
+      "network": "ネットワーク範囲：OAuth ログインとトークン更新は WorkBuddy AI（www.workbuddy.ai）へ接続します。本機のログインファイルや認証情報は送信しません。"
+    },
+    "import": {
+      "localClient": "本機の WorkBuddy AI からインポート"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddyアカウント管理",
     "noAccounts": "WorkBuddy アカウントがありません",

@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} account sincronizzato/i con WorkBuddy",
     "syncToWorkbuddy": "Sincronizza con WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Gestione account WorkBuddy AI (versione internazionale) (clicca per espandere/comprimere)",
+      "desc": "Il cambio account scrive il file di accesso su questa macchina e l'importazione locale legge lo stesso file; i dati restano locali. Se viene rilevato un involucro ufficiale non decifrabile, il file originale viene conservato e non sovrascritto.",
+      "permission": "Ambito dei permessi: lettura/scrittura del file di accesso locale di WorkBuddy AI (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) per l'importazione locale e il cambio account.",
+      "network": "Ambito di rete: l'accesso OAuth e il rinnovo del token contattano WorkBuddy AI (www.workbuddy.ai); i file di accesso locali e le credenziali non vengono mai caricati."
+    },
+    "import": {
+      "localClient": "Importa da WorkBuddy AI locale"
+    }
+  },
   "workbuddy": {
     "title": "Gestione account WorkBuddy",
     "noAccounts": "Nessun account WorkBuddy",

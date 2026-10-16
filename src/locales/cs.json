@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} účtů bylo synchronizováno s WorkBuddy",
     "syncToWorkbuddy": "Synchronizovat s WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Správa účtů WorkBuddy AI (mezinárodní verze) (kliknutím rozbalíte/sbalíte)",
+      "desc": "Přepnutí účtu zapíše přihlašovací soubor do tohoto počítače a místní import čte tentýž soubor; data zůstávají lokálně. Pokud je zjištěn nerozšifrovatelný oficiální obal, původní soubor zůstane zachován a nepřepíše se.",
+      "permission": "Rozsah oprávnění: čtení a zápis místního přihlašovacího souboru WorkBuddy AI (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) pro místní import a přepínání účtů.",
+      "network": "Síťový rozsah: přihlášení OAuth a obnovení tokenu vyžadují připojení k WorkBuddy AI (www.workbuddy.ai); místní přihlašovací soubory ani přihlašovací údaje se nikdy nenahrávají."
+    },
+    "import": {
+      "localClient": "Importovat z místního WorkBuddy AI"
+    }
+  },
   "workbuddy": {
     "title": "Správa účtů WorkBuddy",
     "noAccounts": "Žádné účty WorkBuddy",

@@ -7079,6 +7079,17 @@
     "syncSuccess": "{{count}} account(s) synced to WorkBuddy",
     "syncToWorkbuddy": "Sync to WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI (international) account management (click to expand/collapse)",
+      "desc": "Switching writes the sign-in file on this machine and local import reads that same file; data stays local. If an undecryptable official envelope is detected, the original file is kept and never overwritten.",
+      "permission": "Permissions: read/write the local WorkBuddy AI sign-in file (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) for local import and account switching.",
+      "network": "Network: OAuth sign-in and token refresh call WorkBuddy AI (www.workbuddy.ai). Local sign-in files and credential contents are never uploaded."
+    },
+    "import": {
+      "localClient": "Import from local WorkBuddy AI"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy Account",
     "noAccounts": "No WorkBuddy accounts",

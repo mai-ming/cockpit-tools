@@ -47,6 +47,7 @@ import { useCodebuddyCnAccountStore } from './stores/useCodebuddyCnAccountStore'
 import { useQoderAccountStore } from './stores/useQoderAccountStore';
 import { useTraeAccountStore } from './stores/useTraeAccountStore';
 import { useWorkbuddyAccountStore } from './stores/useWorkbuddyAccountStore';
+import { useWorkbuddyAiAccountStore } from './stores/useWorkbuddyAiAccountStore';
 import { useZedAccountStore } from './stores/useZedAccountStore';
 import { useSideNavLayoutStore } from './stores/useSideNavLayoutStore';
 import { usePlatformLayoutStore } from './stores/usePlatformLayoutStore';
@@ -158,6 +159,9 @@ const TraeAccountsPage = lazy(() =>
 const WorkbuddyAccountsPage = lazy(() =>
   import('./pages/WorkbuddyAccountsPage').then((module) => ({ default: module.WorkbuddyAccountsPage })),
 );
+const WorkbuddyAiAccountsPage = lazy(() =>
+  import('./pages/WorkbuddyAiAccountsPage').then((module) => ({ default: module.WorkbuddyAiAccountsPage })),
+);
 const ZedAccountsPage = lazy(() =>
   import('./pages/ZedAccountsPage').then((module) => ({ default: module.ZedAccountsPage })),
 );;
@@ -228,6 +232,7 @@ const RENDERABLE_PAGE_VALUES: readonly Page[] = [
   'trae-cn',
   'trae-solo-cn',
   'workbuddy',
+  'workbuddy-ai',
   'zed',
   'instances',
   'wakeup',
@@ -264,6 +269,7 @@ const TOP_PROMO_PAGE_PLATFORM_TARGETS: Partial<Record<Page, readonly string[]>> 
   'trae-cn': ['trae-cn', 'trae-suite'],
   'trae-solo-cn': ['trae-solo-cn', 'trae-suite'],
   workbuddy: ['workbuddy'],
+  'workbuddy-ai': ['workbuddy-ai'],
 };
 
 function normalizePromoTarget(value: string): string {
@@ -503,6 +509,7 @@ type QuotaAlertPlatform =
   | 'qoder'
   | 'trae'
   | 'workbuddy'
+  | 'workbuddy_ai'
   | 'zed';
 type UpdateCheckSource = 'auto' | 'manual';
 type UpdateActionState = 'hidden' | 'available' | 'downloading' | 'installing' | 'ready';
@@ -680,6 +687,8 @@ function getQuotaAlertTargetPage(platform: QuotaAlertPlatform): Page {
       return 'trae';
     case 'workbuddy':
       return 'workbuddy';
+    case 'workbuddy_ai':
+      return 'workbuddy-ai';
     case 'zed':
       return 'zed';
     default:
@@ -2951,6 +2960,9 @@ function MainApp() {
                     } else if (platform === 'workbuddy') {
                       await useWorkbuddyAccountStore.getState().switchAccount(targetAccountId);
                       setPage('workbuddy');
+                    } else if (platform === 'workbuddy_ai') {
+                      await useWorkbuddyAiAccountStore.getState().switchAccount(targetAccountId);
+                      setPage('workbuddy-ai');
                     } else if (platform === 'zed') {
                       await useZedAccountStore.getState().switchAccount(targetAccountId);
                       setPage('zed');
@@ -4111,6 +4123,9 @@ function MainApp() {
           </VisibleBootPage>
           <VisibleBootPage when={page === 'workbuddy'}>
             <WorkbuddyAccountsPage />
+          </VisibleBootPage>
+          <VisibleBootPage when={page === 'workbuddy-ai'}>
+            <WorkbuddyAiAccountsPage />
           </VisibleBootPage>
           <VisibleBootPage when={page === 'zed'}>
             <ZedAccountsPage />

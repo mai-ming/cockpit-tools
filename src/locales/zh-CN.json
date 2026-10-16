@@ -7079,6 +7079,17 @@
     "syncSuccess": "成功同步 {{count}} 个账号到 WorkBuddy",
     "syncToWorkbuddy": "同步到 WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI（国际版）账号管理说明（点击展开/收起）",
+      "desc": "切号会把登录文件写入本机，本机导入读取同一登录文件，数据仅在本地处理；检测到无法解密的官方封装时会保留原文件并停止覆盖。",
+      "permission": "权限范围：读写本机 WorkBuddy AI 登录文件（CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info），用于本机导入与账号切换。",
+      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 WorkBuddy AI（www.workbuddy.ai）；不上传本地登录文件或凭证原文。"
+    },
+    "import": {
+      "localClient": "从本机 WorkBuddy AI 导入"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy 账号管理",
     "noAccounts": "暂无 WorkBuddy 账号",

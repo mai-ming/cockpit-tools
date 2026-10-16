@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}} Konto/-en mit WorkBuddy synchronisiert",
     "syncToWorkbuddy": "Mit WorkBuddy synchronisieren"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI (internationale Version) Kontoverwaltung (zum Ein-/Ausklappen klicken)",
+      "desc": "Beim Kontowechsel wird die Anmeldedatei auf diesem Rechner geschrieben, der lokale Import liest dieselbe Datei; die Daten bleiben lokal. Wird eine nicht entschlüsselbare offizielle Hülle erkannt, bleibt die Originaldatei erhalten und wird nicht überschrieben.",
+      "permission": "Berechtigungen: Lesen/Schreiben der lokalen WorkBuddy AI-Anmeldedatei (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) für lokalen Import und Kontowechsel.",
+      "network": "Netzwerk: OAuth-Anmeldung und Token-Aktualisierung rufen WorkBuddy AI (www.workbuddy.ai) auf; lokale Anmeldedateien und Zugangsdaten werden nie hochgeladen."
+    },
+    "import": {
+      "localClient": "Aus lokalem WorkBuddy AI importieren"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy-Kontenverwaltung",
     "noAccounts": "Keine WorkBuddy-Konten",

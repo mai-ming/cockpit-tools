@@ -6906,6 +6906,17 @@
     "syncSuccess": "{{count}} akun berhasil disinkronkan ke WorkBuddy",
     "syncToWorkbuddy": "Sinkronkan ke WorkBuddy"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "Manajemen akun WorkBuddy AI (versi internasional) (klik untuk membuka/menutup)",
+      "desc": "Pergantian akun menulis file masuk di perangkat ini dan impor lokal membaca file yang sama; data tetap lokal. Jika terdeteksi amplop resmi yang tidak dapat didekripsi, file asli dipertahankan dan tidak ditimpa.",
+      "permission": "Cakupan izin: membaca/menulis file masuk WorkBuddy AI lokal (CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) untuk impor lokal dan pergantian akun.",
+      "network": "Cakupan jaringan: login OAuth dan penyegaran token memanggil WorkBuddy AI (www.workbuddy.ai); file masuk lokal dan kredensial tidak pernah diunggah."
+    },
+    "import": {
+      "localClient": "Impor dari WorkBuddy AI lokal"
+    }
+  },
   "workbuddy": {
     "title": "Akun WorkBuddy",
     "noAccounts": "Tidak ada akun WorkBuddy",

@@ -22,6 +22,7 @@ const TRAY_MIGRATED_PLATFORM_IDS: PlatformId[] = [
   'trae_cn',
   'trae_solo_cn',
   'workbuddy',
+  'workbuddy_ai',
 ];
 const DEFAULT_CODEBUDDY_GROUP_ID = 'codebuddy-suite';
 const DEFAULT_ANTIGRAVITY_GROUP_ID = 'antigravity-suite';
@@ -322,6 +323,7 @@ function legacyDefaultPlatformGroups(): PlatformLayoutGroup[] {
     {
       id: DEFAULT_CODEBUDDY_GROUP_ID,
       name: 'CodeBuddy',
+      // 保持与仓库既有默认布局一致：只有 Codex 套件默认成组，其余平台各自独立成项。
       platformIds: ['codebuddy', 'codebuddy_cn', 'workbuddy'],
       defaultPlatformId: 'codebuddy',
       iconKind: 'platform',
@@ -549,6 +551,9 @@ function normalizeGroupName(raw: unknown, fallbackPlatform: PlatformId): string 
   }
   if (fallbackPlatform === 'workbuddy') {
     return 'WorkBuddy';
+  if (fallbackPlatform === 'workbuddy_ai') {
+    return 'WorkBuddy AI';
+  }
   }
   if (fallbackPlatform === 'qoder') {
     return 'Qoder';

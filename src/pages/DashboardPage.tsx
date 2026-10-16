@@ -2680,6 +2680,8 @@ export function DashboardPage({
     trae_cn: stats.trae_cn,
     trae_solo_cn: stats.trae_solo_cn,
     workbuddy: stats.workbuddy,
+    // WorkBuddy AI（国际版）尚未接入仪表盘卡片，账号数固定为 0。
+    workbuddy_ai: 0,
   };
 
   const entryCounts = useMemo(() => {

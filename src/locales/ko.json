@@ -6731,6 +6731,17 @@
     "syncSuccess": "{{count}}개의 계정이 WorkBuddy에 동기화되었습니다",
     "syncToWorkbuddy": "WorkBuddy에 동기화"
   },
+  "workbuddyAi": {
+    "flowNotice": {
+      "title": "WorkBuddy AI(국제판) 계정 관리(클릭하여 펼치기/접기)",
+      "desc": "계정 전환은 이 PC의 로그인 파일에 기록하고, 로컬 가져오기는 같은 파일을 읽습니다. 데이터는 로컬에서만 처리됩니다. 복호화할 수 없는 공식 암호화 봉투가 감지되면 원본 파일을 유지하고 덮어쓰지 않습니다.",
+      "permission": "권한 범위: 로컬 WorkBuddy AI 로그인 파일(CodeBuddyExtension/Data/Public/auth/workbuddy-desktop-ai.info) 읽기/쓰기. 로컬 가져오기와 계정 전환에 사용합니다.",
+      "network": "네트워크 범위: OAuth 로그인과 토큰 갱신은 WorkBuddy AI(www.workbuddy.ai)로 요청합니다. 로컬 로그인 파일과 자격 증명은 업로드하지 않습니다."
+    },
+    "import": {
+      "localClient": "로컬 WorkBuddy AI에서 가져오기"
+    }
+  },
   "workbuddy": {
     "title": "WorkBuddy 계정 관리",
     "noAccounts": "WorkBuddy 계정이 없습니다",
